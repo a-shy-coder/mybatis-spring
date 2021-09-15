@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+    <context:property-placeholder location="dbconfig.properties"/>
+    <!--    使用第三方数据源 Druid-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!--    通过configuration设置Mybatis的全局行为-->
+    <!--<bean id="configuration" class="org.apache.ibatis.session.Configuration">-->
+    <!--    <property name="mapUnderscoreToCamelCase" value="true"-->
+    <!--</bean>-->
+    <!-- sqlSessionFactoryBean 用来创建 sqlSessionFactory -->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--  引用已配置的数据源  necessary -->
+        <property name="dataSource" ref="dataSource"/>
+        <!--    为com.shy.entity下的实体设置别名-->
+        <property name="typeAliasesPackage" value="com.shy.entity"/>
+        <!--    注册所有XXXMapper.xml文件-->
+        <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"/>
+        <!--    <property name="configLocation" value="..."/>--> <!-- 可以读取 mybatis-config.xml的配置 -->
+        <!--    <property name="configuration" ref="configuration"/>--> <!-- 引用 configuration Bean -->
+        <!-- 若configLocation configuration均未配置, 则使用默认配置 -->
+    </bean>
+    <!-- 发现注册器: 让Spring管理mapper接口 从而可以直接通过getBean方式获取相应的XXXMapper.java-->
+    <mybatis:scan base-package="com.shy.mapper"/>
+<!--    也可使用下面这种方式发现注册器-->
+<!--    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">-->
+<!--        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"/>-->
+<!--        <property name="basePackage" value="com.shy.mapper"/>-->
+<!--    </bean>-->
+</beans>
