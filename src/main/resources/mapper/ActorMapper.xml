@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shy.mapper.ActorMapper">
+    <!--    public List<Actor> selectActorListByColumnAndOrder(String column, String order);-->
+    <select id="selectActorListByColumnAndOrder" resultType="com.shy.entity.Actor">
+        SELECT * FROM actor ORDER BY ${column} ${order}
+    </select>
+
+        <resultMap id="actorResultMap" type="com.shy.entity.Actor">
+            <constructor>
+                <idArg name="ActorId" column="ActorId" />
+                <arg name="ActorChineseName" column="ActorChineseName" />
+                <arg name="ActorOriginName" column="ActorOriginName" />
+                <arg name="ActorInfo" column="ActorInfo" />
+                <arg name="ActorGender" column="ActorGender" />
+                <arg name="ActorImg" column="ActorImg" />
+            </constructor>
+        </resultMap>
+<!--    public List<Actor> selectActorList();-->
+    <select id="selectActorList" resultMap="actorResultMap">
+        SELECT * FROM actor
+    </select>
+
+<!--    @MapKey("ActorId")-->
+<!--    public Map<Integer,Actor> selectActorMap();-->
+    <select id="selectActorMap" resultType="java.util.Map">
+        SELECT * FROM actor
+    </select>
+    <select id="selectActorById" resultMap="actorResultMap">
+        SELECT * FROM actor WHERE ActorId = #{id}
+    </select>
+
+    <select id="selectActorByRowBounds" resultMap="actorResultMap" >
+        SELECT * FROM actor
+    </select>
+
+    <update id="updateActorById">
+        UPDATE actor SET ActorId = #{ActorId},
+                         ActorChineseName = #{ActorChineseName},
+                         ActorOriginName = #{ActorOriginName},
+                         ActorInfo = #{ActorInfo},
+                         ActorGender = #{ActorGender},
+                         ActorImg = #{ActorImg}
+                    WHERE ActorId = #{ActorId}
+    </update>
+    <update id="updateActorByMap" parameterType="hashmap">
+        UPDATE actor SET
+        <foreach collection="actorMap" index="key" item="value" separator=",">
+            ${key} = #{value} <!-- 这里不能写成 #{key} 因为key是字段名, 而#{}会为字段名添加单引号, 导致语法错误 -->
+        </foreach>
+        WHERE ActorId = #{actorMap.actorId};
+    </update>
+</mapper>
