@@ -33,6 +33,5 @@ public class ActorServiceImpl implements ActorService {
     @Override
     public void modifyActor(Actor actor) throws Exception {
         actorMapper.updateActorById(actor);
-        throw new Exception();
     }
 }
